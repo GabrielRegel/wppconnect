@@ -1,61 +1,65 @@
-# WPPConnect WhatsApp Sender
+# 📲 WPPConnect WhatsApp Sender
 
-Este projeto é uma aplicação Node.js que envia mensagens automáticas via WhatsApp para contatos cadastrados em um banco de dados MySQL, utilizando [@wppconnect-team/wppconnect](https://github.com/wppconnect-team/wppconnect). Possui uma interface web para cadastro de contatos e envia mensagens personalizadas automaticamente a cada minuto.
+![Node.js](https://img.shields.io/badge/Node.js-18%2B-green)
+![MySQL](https://img.shields.io/badge/MySQL-8.x-blue)
+![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
+[![WPPConnect](https://img.shields.io/badge/WPPConnect-Library-blueviolet)](https://github.com/wppconnect-team/wppconnect)
 
----
-
-## Sumário
-
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação do Node.js](#instalação-do-nodejs)
-- [Clonando o Projeto](#clonando-o-projeto)
-- [Configuração do Banco de Dados](#configuração-do-banco-de-dados)
-- [Configuração de Variáveis de Ambiente (.env)](#configuração-de-variáveis-de-ambiente-env)
-- [Instalação das Dependências](#instalação-das-dependências)
-- [Rodando o Projeto](#rodando-o-projeto)
-- [Utilizando a Interface Web](#utilizando-a-interface-web)
-- [Como funciona o envio automático](#como-funciona-o-envio-automático)
-- [Estrutura de Pastas](#estrutura-de-pastas)
-- [O que não vai para o Git (gitignore)](#o-que-não-vai-para-o-git-gitignore)
-- [Dúvidas Frequentes](#dúvidas-frequentes)
+Sistema automatizado de envio de mensagens via WhatsApp com cadastro de contatos via interface web e integração com banco de dados MySQL. Desenvolvido com Node.js e utilizando a biblioteca [@wppconnect-team/wppconnect](https://github.com/wppconnect-team/wppconnect).
 
 ---
 
-## Pré-requisitos
+## ✨ Funcionalidades
 
-- Node.js (versão 18 ou superior recomendada)
-- npm (geralmente já vem com o Node.js)
+- ✅ Envio automático de mensagens via WhatsApp
+- 🗃️ Cadastro de contatos com nome, sobrenome e telefone
+- 🔁 Verificação a cada 1 minuto para envio de mensagens pendentes
+- 🌐 Interface web simples e funcional
+- 🔐 Conexão segura com banco MySQL via variáveis de ambiente
+- 🖼️ Geração e exibição de QR Code para autenticação
+- 📊 Status de envio controlado diretamente no banco
+
+---
+
+## 📦 Pré-requisitos
+
+- Node.js **18.x** ou superior
+- npm (já incluso com o Node.js)
 - MySQL Server
+- Git (opcional, para clonar o projeto)
 
 ---
 
-## Instalação do Node.js
+## ⚙️ Instalação do Projeto
 
-1. Baixe o instalador em: https://nodejs.org/
-2. Siga o passo a passo da instalação.
-3. Verifique a instalação no terminal/cmd:
-   ```
-   node -v
-   npm -v
-   ```
+### 1. Clone o repositório
 
----
-
-## Clonando o Projeto
-
-```sh
+```bash
 git clone https://github.com/seu-usuario/seu-repo.git
 cd seu-repo
 ```
 
----
+### 2. Instale as dependências
 
-## Configuração do Banco de Dados
+```bash
+npm install
+```
 
-1. Crie um banco de dados MySQL, por exemplo: `wppconnect`.
-2. Crie a tabela de contatos:
+Ou instale os pacotes principais individualmente:
+
+```bash
+npm install express mysql2 @wppconnect-team/wppconnect node-cron
+```
+
+### 3. Configure o banco de dados
+
+No MySQL, crie o banco e a tabela:
 
 ```sql
+CREATE DATABASE wppconnect;
+
+USE wppconnect;
+
 CREATE TABLE contatos (
   id INT AUTO_INCREMENT PRIMARY KEY,
   firstname VARCHAR(100) NOT NULL,
@@ -65,95 +69,78 @@ CREATE TABLE contatos (
 );
 ```
 
----
+### 4. Configure o `.env`
 
-## Configuração de Variáveis de Ambiente (.env)
+Crie o arquivo `.env` na raiz do projeto com as credenciais do banco:
 
-Crie um arquivo chamado `.env` na raiz do projeto (NÃO suba este arquivo para o Git):
-
-```
+```env
 DB_HOST=localhost
 DB_USER=seu_usuario
 DB_PASSWORD=sua_senha
 DB_NAME=wppconnect
 ```
 
-**Dica:**  
-Adicione `.env` ao seu `.gitignore` para evitar subir dados sensíveis.
+> **Importante:** não envie esse arquivo para o Git. Veja a seção [.gitignore](#🛡️-gitignore) abaixo.
 
 ---
 
-## Instalação das Dependências
+## 🚀 Rodando o Projeto
 
-No terminal, dentro da pasta do projeto, execute:
-
-```sh
-npm install
-```
-
-Se faltar algum pacote, instale manualmente, por exemplo:
-
-```sh
-npm install express mysql2 @wppconnect-team/wppconnect node-cron
-```
-
----
-
-## Rodando o Projeto
-
-No terminal, execute:
-
-```sh
+```bash
 npm start
 ```
 
-- O servidor web estará disponível em: [http://localhost:8080](http://localhost:8080)
-- O QR Code para autenticação do WhatsApp será exibido no terminal e salvo como `out.png` na pasta do projeto.
+- Acesse: [http://localhost:8080](http://localhost:8080)
+- Escaneie o QR Code exibido no terminal para autenticar no WhatsApp
+- O QR também será salvo como `out.png` no diretório raiz
 
 ---
 
-## Utilizando a Interface Web
+## 🌐 Utilizando a Interface Web
 
 1. Acesse [http://localhost:8080](http://localhost:8080)
-2. Preencha o formulário com nome, sobrenome e telefone (apenas números, com DDI e DDD, ex: 5511999999999).
-3. Clique em "Adicionar".
-4. O contato será salvo no banco de dados e receberá uma mensagem automática em até 1 minuto.
+2. Preencha o formulário com:
+   - Nome
+   - Sobrenome
+   - Número de telefone (com DDI e DDD, ex: `5511999999999`)
+3. Clique em **Adicionar**
+4. O contato será salvo no banco e receberá a mensagem automaticamente
 
 ---
 
-## Como funciona o envio automático
+## ⏱️ Como Funciona o Envio Automático
 
-- A cada 1 minuto, o sistema verifica todos os contatos com `msg_has_sended = 0`.
-- Envia uma mensagem personalizada para cada contato, usando o nome cadastrado.
-- Após o envio, atualiza o campo `msg_has_sended` para `1` no banco.
+- Um job roda a cada minuto com o pacote `node-cron`
+- Ele busca todos os contatos com `msg_has_sended = 0`
+- Envia uma mensagem personalizada usando o nome do contato
+- Após o envio, o contato é marcado como `msg_has_sended = 1`
 
 ---
 
-## Estrutura de Pastas
+## 🧱 Estrutura de Pastas
 
 ```
 src/
-│
 ├── jobs/
-│   └── sendMessages.js         # Lógica de envio agendado
+│   └── sendMessages.js        # Agendamento e envio de mensagens
 │
 ├── routes/
-│   └── contacts.js             # Rotas da API para contatos
+│   └── contacts.js            # Rotas da API
 │
 ├── views/
-│   └── form.html               # Formulário web (Bootstrap)
+│   └── form.html              # Interface web com formulário (Bootstrap)
 │
-├── bdConnection.js             # Conexão com o MySQL
-├── bdRequisitions.js           # Funções de consulta/atualização no banco
-├── index.js                    # Inicialização do app e servidor web
-├── message.js                  # Listener de mensagens recebidas
+├── bdConnection.js            # Conexão com banco MySQL
+├── bdRequisitions.js          # Consultas e updates no banco
+├── index.js                   # Inicialização do app
+├── message.js                 # Listener de mensagens recebidas
 ```
 
 ---
 
-## O que não vai para o Git (.gitignore)
+## 🛡️ .gitignore
 
-Crie um arquivo `.gitignore` na raiz do projeto com o seguinte conteúdo:
+Adicione um arquivo `.gitignore` com:
 
 ```
 node_modules/
@@ -164,27 +151,24 @@ tokens/
 
 ---
 
-## Dúvidas Frequentes
+## ❓ Dúvidas Frequentes
 
-**1. O WhatsApp precisa estar conectado?**  
-Sim, você precisa escanear o QR Code com o WhatsApp Web para autenticar.
+**1. O WhatsApp precisa estar online?**  
+Sim. A autenticação via QR Code é obrigatória. O WhatsApp Web precisa permanecer ativo.
 
-**2. O número precisa estar salvo nos contatos do WhatsApp?**  
-Não, basta que o número seja válido e tenha WhatsApp.
+**2. O número precisa estar salvo nos contatos?**  
+Não. Basta que o número esteja no WhatsApp.
 
-**3. Como reiniciar o envio para um contato?**  
-Altere o campo `msg_has_sended` para `0` no banco de dados.
+**3. Como reenviar uma mensagem?**  
+No banco de dados, altere o campo `msg_has_sended` para `0`.
 
-**4. Como mudar a mensagem enviada?**  
-Edite o arquivo `src/jobs/sendMessages.js` e personalize a variável `mensagem`.
-
----
-
-## Créditos
-
-- [WPPConnect](https://github.com/wppconnect-team/wppconnect)
-- [Bootstrap](https://getbootstrap.com/)
+**4. Como alterar a mensagem enviada?**  
+Edite o conteúdo no arquivo `src/jobs/sendMessages.js`.
 
 ---
 
-**Dúvidas ou sugestões? Abra uma
+## 📄 Licença
+
+Este projeto está licenciado sob a [Creative Commons BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.pt-br).
+
+> **Você pode copiar, modificar e criar derivados — desde que atribua o crédito a Gabriel Regel e compartilhe sob a mesma licença.**
